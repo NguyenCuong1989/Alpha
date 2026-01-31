@@ -1,0 +1,62 @@
+name: 📊 Update Metrics Dashboard
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  
+  push:
+    branches: [ main ]
+  
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force dashboard update'
+        required: false
+        default: 'true'
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Full history for metrics
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      
+      - name: 📊 Generate Dashboard
+        run: |
+          python3 .github/scripts/metrics_dashboard.py
+      
+      - name: 🌐 Run Network Optimization Check
+        run: |
+          python3 .github/scripts/github_network_optimizer.py
+      
+      - name: 📝 Commit Updated Metrics
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "DAIOF Organism"
+          
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add DASHBOARD.md metrics/ NETWORK_REPORT.md
+            git commit -m "📊 Auto-update metrics dashboard - $(date '+%Y-%m-%d %H:%M')"
+            git push
+            echo "✅ Dashboard updated and pushed"
+          fi
+      
+      - name: 📈 Display Current Health
+        run: |
+          if [ -f metrics/latest.json ]; then
+            echo "🧬 DAIOF ORGANISM HEALTH REPORT" >> $GITHUB_STEP_SUMMARY
+            echo "Dashboard updated successfully" >> $GITHUB_STEP_SUMMARY
+            echo "View full metrics: DASHBOARD.md" >> $GITHUB_STEP_SUMMARY
+          fi
