@@ -122,6 +122,12 @@ pip install -r requirements.txt
 python quick_start.py
 ```
 
+**Run a local smoke check:**
+
+```bash
+python scripts/local_smoke.py
+```
+
 **You'll witness:**
 - 🧬 Creating digital organisms with genetic traits
 - 🔄 Evolution through mutation
