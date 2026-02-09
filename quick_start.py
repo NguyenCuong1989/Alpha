@@ -14,8 +14,14 @@ No configuration needed!
 """
 
 import random
+from importlib import import_module, util
 
-from src.digital_organism import DigitalGenome, DigitalOrganism
+if util.find_spec("hyperai"):
+    hyperai = import_module("hyperai")
+    DigitalGenome = hyperai.DigitalGenome
+    DigitalOrganism = hyperai.DigitalOrganism
+else:
+    from digital_ai_organism_framework import DigitalGenome, DigitalOrganism
 
 
 def print_separator(title=""):
