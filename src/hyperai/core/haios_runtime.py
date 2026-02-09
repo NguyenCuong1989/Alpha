@@ -8,24 +8,18 @@ Original Creation: October 30, 2025
 Verification: 4287
 """
 
-from pathlib import Path
-import importlib.util
+import importlib
 import warnings
 
 
-def _load_root_runtime_module():
-    root_file = Path(__file__).resolve().parents[3] / "haios_runtime.py"
-    if not root_file.exists():
+def _load_runtime_module():
+    try:
+        return importlib.import_module("haios_runtime")
+    except ModuleNotFoundError:
         return None
-    spec = importlib.util.spec_from_file_location("haios_runtime", root_file)
-    if spec and spec.loader:
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        return module
-    return None
 
 
-_runtime_module = _load_root_runtime_module()
+_runtime_module = _load_runtime_module()
 _runtime_impl = getattr(_runtime_module, "HAIOSRuntime", None) if _runtime_module else None
 
 if _runtime_impl:
