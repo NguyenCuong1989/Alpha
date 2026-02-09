@@ -17,10 +17,10 @@ sys.path.insert(0, str(root_dir))
 
 # Import from root-level implementation if exists
 try:
-    from digital_ai_organism_framework import DRProtocol as DRProtocolImpl
+    import digital_ai_organism_framework as daiof
 
-    DRProtocol = DRProtocolImpl
-except (ImportError, AttributeError):
+    DRProtocol = daiof.DRProtocol
+except ImportError:
     # Provide stub implementation
     class DRProtocol:
         """D&R Protocol - Deconstruct and Rearchitect"""
@@ -41,6 +41,8 @@ except (ImportError, AttributeError):
                 },
                 "decision": "Protocol applied",
             }
+except AttributeError as exc:
+    raise AttributeError("digital_ai_organism_framework.DRProtocol not found") from exc
 
 
 __all__ = ["DRProtocol"]
