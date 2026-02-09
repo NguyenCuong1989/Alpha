@@ -8,16 +8,9 @@ Original Creation: October 30, 2025
 Verification: 4287
 """
 
-import sys
-from pathlib import Path
-
-# Add root directory to path to import from root-level modules
-root_dir = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(root_dir))
-
-# Import from root-level implementation
+# Import from package implementation
 try:
-    from haios_runtime import HAIOSRuntime as HAIOSRuntimeImpl
+    from hyperai.haios_runtime import HAIOSRuntime as HAIOSRuntimeImpl
 
     HAIOSRuntime = HAIOSRuntimeImpl
 except ImportError:
