@@ -8,20 +8,35 @@ Original Creation: October 30, 2025
 Verification: 4287
 """
 
-import sys
 from pathlib import Path
+import importlib.util
+import warnings
 
-# Add root directory to path to import from root-level modules
-root_dir = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(root_dir))
 
-# Import from root-level implementation if exists
-try:
-    from digital_ai_organism_framework import DRProtocol as DRProtocolImpl
+def _load_root_framework_module():
+    root_file = Path(__file__).resolve().parents[3] / "digital_ai_organism_framework.py"
+    if not root_file.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("digital_ai_organism_framework", root_file)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    return None
 
-    DRProtocol = DRProtocolImpl
-except (ImportError, AttributeError):
-    # Provide stub implementation
+
+_framework_module = _load_root_framework_module()
+_dr_impl = getattr(_framework_module, "DRProtocol", None) if _framework_module else None
+
+if _dr_impl:
+    DRProtocol = _dr_impl
+else:
+    warnings.warn(
+        "DRProtocol implementation not found; using stub protocol. "
+        "Ensure digital_ai_organism_framework.py is available in the project root or packaged module.",
+        RuntimeWarning,
+    )
+
     class DRProtocol:
         """D&R Protocol - Deconstruct and Rearchitect"""
 
